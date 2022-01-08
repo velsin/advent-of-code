@@ -39,9 +39,22 @@ for x in raw_inp.rstrip().splitlines():
         for x in range(min(x1,x2), max(x1,x2)+1):
             grid[x,y1] += 1
 
+    # must be the diagonal line case
     else:
-        # print('not straight')
-        pass
+        dy = y2 - y1
+        dx = x2 - x1
+        # two cases, depedning on if mixed sign or same sign
+        if dy*dx > 0: # same
+            x_start = min(x1,x2)
+            y_start = min(y1,y2)
+            for i in range(abs(dx)+1):
+                grid[x_start+i, y_start+i] += 1
+
+        if dy*dx < 0: # opp
+            x_start = min(x1,x2)
+            y_start = max(y1,y2)
+            for i in range(abs(dx)+1):
+                grid[x_start+i, y_start-i] += 1
 
 # count the number of points in the grid with a score greater than 1
 count = sum([1 for x in grid.values() if x > 1])
