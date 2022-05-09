@@ -31,10 +31,14 @@ nCol = len(grid[0])
 dRow = [-1, -1, 0, 1, 1, 1, 0, -1]
 dCol = [0, 1, 1, 1, 0, -1, -1, -1]
 
-nCycles = 100
+nCycles = 0
+sync_flash = False
 flash_count = 0
 
-for cycle in range(nCycles):
+# make the outer loop a while loop, keep going until the sync flash
+
+while not sync_flash:
+    nCycles += 1
     # do the whole process within here
 
     # increase energy of each octopus
@@ -77,11 +81,12 @@ for cycle in range(nCycles):
         # print(Q)
         # print(input())
 
+    sync_flash = all([x for sublist in flashed for x in sublist])
+
     # after going through the flash cascade, all nodes that flash are set to 0
     for i in range(nRow):
         for j in range(nCol):
             if flashed[i][j]:
                 grid[i][j] = 0
 
-
-print(flash_count)
+print(nCycles)
