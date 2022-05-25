@@ -4,7 +4,7 @@ INPUT = []
 
 TEST_INPUT = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
 
-with open('./inputs/day01.txt') as f:
+with open('./data/day01.txt') as f:
     for line in f:
         INPUT.append(int(line.rstrip()))
 
