@@ -21,32 +21,29 @@ with open('./data/day03.txt') as f:
 
 def read_life_support_rating(inputs: List[str]) -> int:
     seq_length = len(inputs[0])
-    N = len(inputs)
 
-    oxy_counter = [0 for x in range(seq_length)]
-    c02_counter = [0 for x in range(seq_length)]
-
-    oxy = ''
-    c02 = ''
-
+    o2_list = inputs.copy()
     for i in range(seq_length):
-        for inp in inputs:
-            
+        N = len(o2_list)
+        count = 0
+        for inp in o2_list:
+            count += int(inp[i])
+        most_common = '1' if count/N >= 0.5 else '0'
+        if len(o2_list) > 1:
+            o2_list = [x for x in o2_list if x[i]==most_common]
 
+    co2_list = inputs.copy()
+    for i in range(seq_length):
+        N = len(co2_list)
+        count = 0
+        for inp in co2_list:
+            count += int(inp[i])
+        least_common = '0' if count/N >= 0.5 else '1'
+        if len(co2_list) > 1:
+            co2_list = [x for x in co2_list if x[i]==least_common]
 
-    
-
-
-    for x in counter_list:
-        if x/N >= 0.5:
-            gamma += '1'
-            epsilon += '0'
-        else:
-            gamma += '0'
-            epsilon += '1'
-
-    return int(gamma, base=2)*int(epsilon, base=2)
+    return int(o2_list[0], base=2)*int(co2_list[0], base=2)
 
 assert read_life_support_rating(TEST_INPUT)==230
 
-print(read_power_consumption(INPUT))
+print(read_life_support_rating(INPUT))
