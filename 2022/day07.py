@@ -73,7 +73,7 @@ def get_size(ptr: Any, path: List[str], results: Dict[str, int]) -> int:
         return ptr
 
 
-def directory_sum(file_system: Dict[str, Any], size_limit: int) -> Dict[str, int]:
+def directory_sum(file_system: Dict[str, Any], size_limit: int) -> int:
     # Travel recursively down the file system and get the sizes of every directory, return those
     # within limit
 
@@ -90,4 +90,29 @@ def directory_sum(file_system: Dict[str, Any], size_limit: int) -> Dict[str, int
     return res
 
 
+def directory_delete(
+    file_system: Dict[str, Any], total_space: int, required_space: int
+):
+    folder_sizes = {}
+    path = []
+
+    missing_space = (
+        required_space - total_space + get_size(file_system, path, folder_sizes)
+    )
+
+    smallest_folder_size = min(
+        [value for value in folder_sizes.values() if value >= missing_space]
+    )
+
+    return smallest_folder_size
+
+
 print(directory_sum(file_system=parse_input(read_input(filepath)), size_limit=100000))
+
+print(
+    directory_delete(
+        file_system=parse_input(read_input(filepath)),
+        total_space=70000000,
+        required_space=30000000,
+    )
+)
