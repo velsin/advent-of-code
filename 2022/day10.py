@@ -26,13 +26,38 @@ def calculate_signal_strength(instructions: List[str]) -> int:
                 Q.append(int(line[1]))
 
     # parse Q and execute the cycles
+
+    pixel_pos = 0
+    pixel_rows = []
+    pixel_row = []
+
     for command in Q:
+        # draw
+        print(register, pixel_pos)
+        if abs(register - pixel_pos) < 2:
+            print("draw")
+            pixel_row.append("#")
+        else:
+            print("blank")
+            pixel_row.append(".")
+
         if command:
             register += command
+
         cycle += 1
+        pixel_pos += 1
 
         if (cycle - 20) % 40 == 0:
             signal_strength.append(cycle * register)
+
+            # pixel
+        if pixel_pos % 40 == 0:
+            pixel_rows.append(pixel_row)
+            pixel_row = []
+            pixel_pos = 0
+
+    for row in pixel_rows:
+        print(row)
 
     return sum(signal_strength)
 
