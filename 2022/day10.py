@@ -32,7 +32,7 @@ def calculate_signal_strength(instructions: List[str]) -> int:
     pixel_row = []
 
     for command in Q:
-        # draw
+        # draw pixels
         print(register, pixel_pos)
         if abs(register - pixel_pos) < 2:
             print("draw")
@@ -50,7 +50,7 @@ def calculate_signal_strength(instructions: List[str]) -> int:
         if (cycle - 20) % 40 == 0:
             signal_strength.append(cycle * register)
 
-            # pixel
+        # pixel row break
         if pixel_pos % 40 == 0:
             pixel_rows.append(pixel_row)
             pixel_row = []
