@@ -16,6 +16,7 @@ def parse_input(filepath: str) -> List[str]:
 
 class Monkey:
     monkey_dict = {}  # keep track of all monkeys created, must have unique ids
+    lcm = None
 
     @classmethod
     def inventory_status(cls):
@@ -24,21 +25,35 @@ class Monkey:
 
     @classmethod
     def play_round(cls):
+        # On the first round, compute lcm
+        if not cls.lcm:
+            cls.find_lcm()
+
         for monkey in cls.monkey_dict.values():
             monkey.play_turn()
         cls.inventory_status()
 
-    def __init__(self, monkey_spec):
+    @classmethod
+    def find_lcm(cls):
+        # lcm will just be product since the test divisors are prime
+        lcm = 1
+        for monkey in cls.monkey_dict.values():
+            lcm *= monkey.test_divisor
+        cls.lcm = lcm
+
+    def __init__(self, monkey_spec, part):
         parsed_spec = self.parse_specification(monkey_spec)
 
         self.id = parsed_spec["id"]
         self.items = parsed_spec["items"]
         self.operation = parsed_spec["operation"]
         self.test = parsed_spec["test"]
+        self.test_divisor = parsed_spec["test_divisor"]
         self.if_true = parsed_spec["if_true"]
         self.if_false = parsed_spec["if_false"]
 
         self.inspections = 0
+        self.part = part
 
         # Add self to the monkey dict
         Monkey.monkey_dict[self.id] = self
@@ -55,6 +70,7 @@ class Monkey:
                 re.match(r".+=\s*(.*)", spec[2])[1], {"old": x}
             ),
             "test": lambda x: (x % int(re.search(r"\d+", spec[3])[0])) == 0,
+            "test_divisor": int(re.search(r"\d+", spec[3])[0]),
             "if_true": re.search(r"\d+", spec[4])[0],
             "if_false": re.search(r"\d+", spec[5])[0],
         }
@@ -67,7 +83,10 @@ class Monkey:
             self.inspections += 1
             # print("grabbing item with worry", item_worry)
 
-            new_worry = self.operation(item_worry) // 3
+            if self.part == 1:
+                new_worry = self.operation(item_worry) // 3
+            elif self.part == 2:
+                new_worry = self.operation(item_worry) % Monkey.lcm
             # print("new worry", new_worry)
 
             if self.test(new_worry):
@@ -78,21 +97,51 @@ class Monkey:
                 Monkey.monkey_dict[self.if_false].items.append(new_worry)
 
 
-# Create Critters
-for monkey_spec in parse_input(filepath):
-    Monkey(monkey_spec=monkey_spec)
+def part_1():
+    # Create Critters
+    for monkey_spec in parse_input(filepath):
+        Monkey(monkey_spec=monkey_spec, part=1)
 
-# Simulate Simian Shenanigans
-n_rounds = 20
-for i in range(n_rounds):
-    print("ROUND ", i + 1)
-    Monkey.play_round()
+    # Simulate Simian Shenanigans
+    n_rounds = 20
+    for i in range(n_rounds):
+        print("ROUND ", i + 1)
+        Monkey.play_round()
 
-# Report Results
-for id, monkey in Monkey.monkey_dict.items():
-    print(f"Monkey {id} had {monkey.inspections} inspections.")
+    # Report Results
+    for id, monkey in Monkey.monkey_dict.items():
+        print(f"Monkey {id} had {monkey.inspections} inspections.")
 
-monkey_business = reduce(
-    mul, (sorted([monkey.inspections for monkey in Monkey.monkey_dict.values()]))[-2:]
-)
-print("Result:", monkey_business)
+    monkey_business = reduce(
+        mul,
+        (sorted([monkey.inspections for monkey in Monkey.monkey_dict.values()]))[-2:],
+    )
+
+    print("Result:", monkey_business)
+
+
+def part_2():
+    # Create Critters
+    for monkey_spec in parse_input(filepath):
+        Monkey(monkey_spec=monkey_spec, part=2)
+
+    # Simulate Simian Shenanigans
+    n_rounds = 10000
+    for i in range(n_rounds):
+        print("ROUND ", i + 1)
+        Monkey.play_round()
+
+    # Report Results
+    for id, monkey in Monkey.monkey_dict.items():
+        print(f"Monkey {id} had {monkey.inspections} inspections.")
+
+    monkey_business = reduce(
+        mul,
+        (sorted([monkey.inspections for monkey in Monkey.monkey_dict.values()]))[-2:],
+    )
+
+    print("Result:", monkey_business)
+
+
+# part_1()
+part_2()
