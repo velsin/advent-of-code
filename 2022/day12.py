@@ -1,12 +1,12 @@
 from collections import defaultdict, deque
-from typing import List
 
 FILEPATH = "./data/day12.txt"
 
 
-def parse_input(filepath: str) -> List[str]:
+def parse_input(filepath: str):
     # Create and return a grid structure
     grid = {}
+    bottom_elevations = []
     with open(filepath) as f:
         for i, line in enumerate(f.readlines()):
             for j, char in enumerate(line.strip()):
@@ -14,10 +14,14 @@ def parse_input(filepath: str) -> List[str]:
                 if char == "S":
                     start = (i, j)
                     grid[i, j] = "a"
+                    bottom_elevations.append((i, j))
                 if char == "E":
                     end = (i, j)
                     grid[i, j] = "z"
-    return grid, start, end
+                if char == "a":
+                    bottom_elevations.append((i, j))
+
+    return grid, start, end, bottom_elevations
 
 
 # 1. Each step we take, we want to be moving toward the target as best we can
@@ -28,10 +32,12 @@ def parse_input(filepath: str) -> List[str]:
 # 5. We can find the shortest route with a pathfinding algorithm on the resulting graph.
 
 
-def build_graph(grid, start):
+def build_graph(grid, start, reversed=False):
     def valid_path(a, b):
         # Check if we can move from a to b by converting letter to numeric representation
-        return (ord(b) - ord(a)) <= 1
+        delta = ord(b) - ord(a)
+
+        return delta in [-1, 0, 1, 2] if reversed else delta in [-2, -1, 0, 1]
 
     DIRS = [(1, 0), (-1, 0), (0, 1), (0, -1)]
     # Create the graph using BFS, use dict to store since adjacency matrix will be so big and sparse
@@ -46,23 +52,18 @@ def build_graph(grid, start):
         node = Q.popleft()
         visited.append(node)
 
-        # print("traversing for:", node, "with value", grid.get(node))
         for di, dj in DIRS:
             neighbor = (node[0] + di, node[1] + dj)
             if grid.get(neighbor):  # to avoid out of bounds
                 if valid_path(grid.get(node), grid.get(neighbor)):
-                    # print("found valid neighbor:")
-                    # print(neighbor, grid.get(neighbor))
                     graph[node].append(neighbor)
                 if neighbor not in visited and neighbor not in Q:
                     Q.append(neighbor)
-        # print("done with", node)
-        # print("current Q:", Q)
 
     return graph
 
 
-def shortest_path(graph, start, end):
+def shortest_path(graph, start, end=None):
     # Use Dijkstras since I don't know A* (let's be real I don't know Dijkstras either!)
     Q = deque()
 
@@ -90,11 +91,24 @@ def shortest_path(graph, start, end):
         if node == end:
             break
 
-    return distances[end]
+    return distances[end] if end else distances
 
 
-grid, start, end = parse_input(FILEPATH)
+grid, start, end, bottom_elevations = parse_input(FILEPATH)
+
+print(start, end)
+
+# Part 1
 graph = build_graph(grid, start)
-res = shortest_path(graph, start, end)
+# print(graph)
+res_1 = shortest_path(graph, start, end)
+print("Part 1:", res_1)
 
-print(res)
+# Part 2
+# Brute force might work with a better shortest path algo but not here
+reverse_graph = build_graph(grid, end, reversed=True)
+distances = shortest_path(reverse_graph, end)
+
+bottom_distances = [distances[node] for node in bottom_elevations if node in distances]
+res_2 = min(bottom_distances)
+print("Part 2:", res_2)
