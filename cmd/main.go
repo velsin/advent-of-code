@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"github.com/velsin/advent-of-code/2023/go/day01"
 )
 
 // Central runner for all the Go solutions
@@ -13,11 +15,18 @@ import (
 // }
 
 func main() {
-	yearFlag := flag.Int("year", 0, "Year to run")
+	// Currently no support for other years, we only have 2023. Refactory once we do
+	yearFlag := flag.Int("year", 2023, "Year to run")
 	dayFlag := flag.Int("day", 0, "Day to run")
 
 	flag.Parse()
 
-	fmt.Printf("Running Year %d Day %d\n", *yearFlag, *dayFlag)
+	fmt.Printf("Running year %d day %d\n", *yearFlag, *dayFlag)
 
+	switch *dayFlag {
+	case 1:
+		day01.Day01()
+	default:
+		fmt.Println("Day not implemented.")
+	}
 }

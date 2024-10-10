@@ -9,18 +9,8 @@ import (
 	"strings"
 )
 
-// Let's just start with naive implementation of putting everything in main.
-// TODO: Create a file reader (and parser?) util in the root?
 func Day01() {
-	data, err := os.ReadFile(filepath.Join(os.Getenv("AOC_DIR"), "2023/data/day01.txt"))
-
-	if err != nil {
-		fmt.Println("Error reading file.")
-		panic(err)
-	}
-
-	input := string(data)
-	lines := strings.Split(strings.TrimSpace(input), "\n")
+	lines := splitLines(readInput())
 
 	// Part 1
 	var lineSumPart1 int
@@ -52,6 +42,21 @@ func Day01() {
 	fmt.Println("Part 2: ", lineSumPart2)
 }
 
+func readInput() string {
+	data, err := os.ReadFile(filepath.Join(os.Getenv("AOC_DIR"), "2023/data/day01.txt"))
+
+	if err != nil {
+		fmt.Println("Error reading file.")
+		panic(err)
+	}
+
+	return string(data)
+}
+
+func splitLines(input string) []string {
+	return strings.Split(strings.TrimSpace(input), "\n")
+}
+
 func parseLine(line string) string {
 	// Extract all the digit characters
 
@@ -71,25 +76,36 @@ func parseLine(line string) string {
 
 func parseLine2(line string) string {
 	// Extract all the digit characters, along with text representation of them, using a regex
-	// Q: Are overlaps allowed? Ie is a character allowed to be shared between two "digits"?
 
 	var b strings.Builder
 
+	// Can't do lookahead regex in Go stdlib due to linear time guarantee.
 	digitRe := regexp.MustCompile(`[0-9]|one|two|three|four|five|six|seven|eight|nine|zero`)
-	matches := digitRe.FindAllString(line, -1)
+
+	// To get overlaps, iterate character by character through string and do first match, however
+	// this will give O(n^2) complexity
+	matches := []string{}
+	for i := range line {
+		match := digitRe.FindString(line[i:])
+		if match == "" {
+			break
+		} else {
+			matches = append(matches, match)
+		}
+	}
 
 	// Remap the matches to actual digits
-	replaceMap := map[string]rune {
-		"one": '1',
-		"two": '2',
+	replaceMap := map[string]rune{
+		"one":   '1',
+		"two":   '2',
 		"three": '3',
-		"four": '4',
-		"five": '5',
-		"six": '6',
+		"four":  '4',
+		"five":  '5',
+		"six":   '6',
 		"seven": '7',
 		"eight": '8',
-		"nine": '9',
-		"zero": '0',
+		"nine":  '9',
+		"zero":  '0',
 	}
 
 	for _, digit := range matches {
