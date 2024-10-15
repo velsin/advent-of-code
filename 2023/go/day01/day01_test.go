@@ -2,6 +2,8 @@ package day01
 
 import (
 	"testing"
+
+	utils "github.com/velsin/advent-of-code/utils/go"
 )
 
 var testInput1 = `1abc2
@@ -26,29 +28,8 @@ sqrdkpzeight936oneighth
 three7qfnzmbqmnh563six55eightwot
 `
 
-func TestSplitLines(t *testing.T) {
-	res := splitLines(testInput1)
-
-	expected := []string{
-		"1abc2",
-		"pqr3stu8vwx",
-		"a1b2c3d4e5f",
-		"treb7uchet",
-	}
-
-	if len(res) != len(expected) {
-		t.Errorf("splitLines returned an array with %d lines, expected %d", len(res), len(expected))
-	}
-
-	for i, val := range res {
-		if val != expected[i] {
-			t.Errorf("splitLines error on line %d. Result: %q, Expected: %q", i, val, expected[i])
-		}
-	}
-}
-
 func TestParseLine(t *testing.T) {
-	input := splitLines(testInput1)
+	input := utils.SplitLines(testInput1)
 
 	var res = make([]string, len(input))
 	for i, line := range input {
@@ -72,7 +53,7 @@ func TestParseLine(t *testing.T) {
 }
 
 func TestParseLine2(t *testing.T) {
-	input := splitLines(testInput2)
+	input := utils.SplitLines(testInput2)
 
 	var res = make([]string, len(input))
 	for i, line := range input {
@@ -98,7 +79,7 @@ func TestParseLine2(t *testing.T) {
 }
 
 func TestParseLine2EdgeCases(t *testing.T) {
-	input := splitLines(testInput3)
+	input := utils.SplitLines(testInput3)
 
 	var res = make([]string, len(input))
 	for i, line := range input {

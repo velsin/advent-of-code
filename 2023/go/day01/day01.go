@@ -2,15 +2,15 @@ package day01
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	utils "github.com/velsin/advent-of-code/utils/go"
 )
 
 func Day01() {
-	lines := splitLines(readInput())
+	lines := utils.SplitLines(utils.ReadInput(2023, 1))
 
 	// Part 1
 	var lineSumPart1 int
@@ -40,21 +40,6 @@ func Day01() {
 	}
 
 	fmt.Println("Part 2: ", lineSumPart2)
-}
-
-func readInput() string {
-	data, err := os.ReadFile(filepath.Join(os.Getenv("AOC_DIR"), "2023/data/day01.txt"))
-
-	if err != nil {
-		fmt.Println("Error reading file.")
-		panic(err)
-	}
-
-	return string(data)
-}
-
-func splitLines(input string) []string {
-	return strings.Split(strings.TrimSpace(input), "\n")
 }
 
 func parseLine(line string) string {
