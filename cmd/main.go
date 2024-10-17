@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/velsin/advent-of-code/2023/go/day01"
+	"github.com/velsin/advent-of-code/2023/go/day02"
 )
 
 // Central runner for all the Go solutions
@@ -26,6 +27,8 @@ func main() {
 	switch *dayFlag {
 	case 1:
 		day01.Day01()
+	case 2:
+		day02.Day02()
 	default:
 		fmt.Println("Day not implemented.")
 	}
