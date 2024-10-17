@@ -30,11 +30,29 @@ type Game struct {
 func (g *Game) returnValue(maxCountMap map[string]int) int {
 	for _, draw := range g.draws {
 		if draw.isInvalid(maxCountMap[draw.color]) == true {
-			fmt.Println("invalid draw:", draw)
 			return 0
 		}
 	}
 	return g.id
+}
+
+func (g *Game) returnPower() int {
+	var maxDraws = map[string]int{
+		"red":   0,
+		"green": 0,
+		"blue":  0,
+	}
+	for _, draw := range g.draws {
+		if draw.count > maxDraws[draw.color] {
+			maxDraws[draw.color] = draw.count
+		}
+	}
+
+	var res int = 1
+	for _, val := range maxDraws {
+		res *= val
+	}
+	return res
 }
 
 type Draw struct {
@@ -63,8 +81,6 @@ func parseLine(input string) *Game {
 
 	game_string := strings.Split(input, ":")[0]
 	draws := strings.Split(input, ":")[1]
-	// fmt.Println("game string", game_string)
-	// fmt.Println("draws", draws)
 
 	id, err := strconv.Atoi(strings.Split(game_string, " ")[1])
 	if err != nil {
@@ -73,15 +89,10 @@ func parseLine(input string) *Game {
 	var draw_slice = []Draw{}
 
 	for _, draws_string := range strings.Split(draws, ";") {
-		// fmt.Println("draws_string:", draws_string)
 		for _, draw_string := range strings.Split(draws_string, ",") {
 			draw_slice = append(draw_slice, NewDraw(strings.Trim(draw_string, " ")))
 		}
-		// fmt.Println("draw slice", draw_slice)
 	}
-
-	fmt.Println("draw slice from line parse: ", draw_slice)
-
 	var game = &Game{
 		id:    id,
 		draws: draw_slice,
@@ -107,16 +118,26 @@ func part1(input string) int {
 
 	var sum int = 0
 	for _, game := range games {
-		fmt.Println("game:", game.id, game.draws)
 		res := game.returnValue(maxCountMap)
-		fmt.Println("game is valid:", res > 0)
 		sum += res
-		fmt.Println("sum:", sum, "\n")
 	}
 
 	return sum
 }
 
 func part2(input string) int {
-	return 1
+
+	lines := utils.SplitLines(input)
+	var games = []*Game{}
+
+	for _, line := range lines {
+		games = append(games, parseLine(line))
+	}
+
+	var sum int = 0
+	for _, game := range games {
+		res := game.returnPower()
+		sum += res
+
+	return sum
 }

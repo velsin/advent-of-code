@@ -44,3 +44,14 @@ func TestPart1(t *testing.T) {
 	}
 
 }
+
+func TestPart2(t *testing.T) {
+	res := part2(testInput1)
+	expected := 2286
+
+	if res != expected {
+		t.Errorf("Part 2 solution is incorrect on test input. Result: %d, Expected: %d",
+			res, expected)
+	}
+
+}
